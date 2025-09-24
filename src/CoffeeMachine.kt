@@ -1,8 +1,12 @@
+import kotlin.text.toInt
+import kotlin.times
+
 object CoffeeMachine {
     private var CurrentState: CoffeeMachineState = CoffeeMachineState.Idle
     var precioCafeSeleccionado: Double = 0.0
     var cafeSeleccionado: String = ""
     var nivelAzucar: Int = 0
+    var cambio: Double = 0.0
 
     fun MakeCoffee() {
         println("Estado actual: $CurrentState")
@@ -13,25 +17,29 @@ object CoffeeMachine {
                 selectionCafe()
                 selectionSugar()
                 CurrentState = CoffeeMachineState.CoffeeSelection(cafeSeleccionado, nivelAzucar)
-                if (pago()) {
-                    CurrentState = CoffeeMachineState.MakingCoffee
-                    println("Preparando su cafe...")
-                    Thread.sleep(2000)
-
-                    CurrentState = CoffeeMachineState.ServingCoffee
-                    println("Sirviendo su cafe...")
-                    Thread.sleep(2000)
-                    CurrentState = CoffeeMachineState.CoffeeFinal(0.50)
-                    println("Su cafe esta listo, aqui tiene su cambio")
-                }
+                MakeCoffee()
             }
             is CoffeeMachineState.CoffeeSelection -> {
+                if (pago()) {
+                    CurrentState = CoffeeMachineState.MakingCoffee
+                    MakeCoffee()
+                }
+            }
+            is CoffeeMachineState.MakingCoffee -> {
+                println("Preparando su cafe...")
+                Thread.sleep(2000)
+                CurrentState = CoffeeMachineState.ServingCoffee
+                MakeCoffee()
+            }
+            is CoffeeMachineState.ServingCoffee -> {
                 println("Sirviendo su cafe...")
                 Thread.sleep(2000)
+                CurrentState = CoffeeMachineState.CoffeeFinal(cambio)
+                MakeCoffee()
             }
-            is CoffeeMachineState.MakingCoffee -> {}
-            is CoffeeMachineState.ServingCoffee -> {}
-            is CoffeeMachineState.CoffeeFinal -> {}
+            is CoffeeMachineState.CoffeeFinal -> {
+                println("Su cafe esta listo, aqui tiene su cambio: €$cambio")
+            }
         }
     }
 
@@ -73,8 +81,8 @@ object CoffeeMachine {
         println("Por favor, inserte el dinero")
         val dineroInsertado = readLine()?.toDoubleOrNull() ?: 0.0
         return if (dineroInsertado >= precioCafeSeleccionado) {
-            val cambio = dineroInsertado - precioCafeSeleccionado
-            println("Pago aceptado. Su cambio es: €$cambio")
+            cambio = ((dineroInsertado - precioCafeSeleccionado) * 100).toInt() / 100.0
+            println("Pago aceptado. Su cambio es: €${"%.2f".format(cambio)}")
             true
         } else {
             println("Dinero insuficiente. Por favor, inserte al menos €$precioCafeSeleccionado")
