@@ -1,6 +1,8 @@
 object CoffeeMachine {
     private var CurrentState: CoffeeMachineState = CoffeeMachineState.Idle
     var precioCafeSeleccionado: Double = 0.0
+    var cafeSeleccionado: String = ""
+    var nivelAzucar: Int = 0
 
     fun MakeCoffee() {
         println("Estado actual: $CurrentState")
@@ -8,21 +10,25 @@ object CoffeeMachine {
         when (CurrentState) {
             is CoffeeMachineState.Idle -> {
                 println("La maquina esta en espera, seleccione su cafe")
-                CurrentState = CoffeeMachineState.CoffeeSelection("Espresso", 2)
                 selectionCafe()
-                pago()
+                selectionSugar()
+                CurrentState = CoffeeMachineState.CoffeeSelection(cafeSeleccionado, nivelAzucar)
+                if (pago()) {
+                    CurrentState = CoffeeMachineState.MakingCoffee
+                    println("Preparando su cafe...")
+                    Thread.sleep(2000)
 
-                CurrentState = CoffeeMachineState.MakingCoffee
-                println("Preparando su cafe...")
-                Thread.sleep(2000)
-
-                CurrentState = CoffeeMachineState.ServingCoffee
+                    CurrentState = CoffeeMachineState.ServingCoffee
+                    println("Sirviendo su cafe...")
+                    Thread.sleep(2000)
+                    CurrentState = CoffeeMachineState.CoffeeFinal(0.50)
+                    println("Su cafe esta listo, aqui tiene su cambio")
+                }
+            }
+            is CoffeeMachineState.CoffeeSelection -> {
                 println("Sirviendo su cafe...")
                 Thread.sleep(2000)
-                CurrentState = CoffeeMachineState.CoffeeFinal(0.50)
-                println("Su cafe esta listo, aqui tiene su cambio")
             }
-            is CoffeeMachineState.CoffeeSelection -> {}
             is CoffeeMachineState.MakingCoffee -> {}
             is CoffeeMachineState.ServingCoffee -> {}
             is CoffeeMachineState.CoffeeFinal -> {}
@@ -44,26 +50,35 @@ object CoffeeMachine {
         }
         print("Introduce el nombre de tu café: ")
         val opcion = readLine()?.trim()
-        val cafeSeleccionado = listaDeCafes.find { it.first.equals(opcion, ignoreCase = true) }
-        if (cafeSeleccionado != null) {
-            val (nombre, precio) = cafeSeleccionado
+        val cafe = listaDeCafes.find { it.first.equals(opcion, ignoreCase = true) }
+        if (cafe != null) {
+            val (nombre, precio) = cafe
             precioCafeSeleccionado = precio
+            cafeSeleccionado = nombre
             println("Has elegido: $nombre - €$precio")
         } else {
             println("Opción no válida.")
             precioCafeSeleccionado = 0.0
+            cafeSeleccionado = ""
         }
     }
 
-    fun pago() {
+    fun selectionSugar() {
+        print("¿Cuánta azúcar quieres? (0-5): ")
+        nivelAzucar = readLine()?.toIntOrNull()?.coerceIn(0, 5) ?: 0
+        println("Nivel de azúcar seleccionado: $nivelAzucar")
+    }
+
+    fun pago(): Boolean {
         println("Por favor, inserte el dinero")
         val dineroInsertado = readLine()?.toDoubleOrNull() ?: 0.0
-        if (dineroInsertado >= precioCafeSeleccionado) {
+        return if (dineroInsertado >= precioCafeSeleccionado) {
             val cambio = dineroInsertado - precioCafeSeleccionado
             println("Pago aceptado. Su cambio es: €$cambio")
+            true
         } else {
             println("Dinero insuficiente. Por favor, inserte al menos €$precioCafeSeleccionado")
+            false
         }
     }
 }
-
