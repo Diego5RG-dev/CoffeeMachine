@@ -9,41 +9,45 @@ object CoffeeMachine {
     var cambio: Double = 0.0
 
     fun MakeCoffee() {
-        println("Estado actual: $CurrentState")
-
-        when (CurrentState) {
-            is CoffeeMachineState.Idle -> {
-                println("La maquina esta en espera, seleccione su cafe")
-                selectionCafe()                                             /*el usuario selecciona el cafe y el nivel de azucar en estado IDLE*/
-                selectionSugar()
-                CurrentState = CoffeeMachineState.CoffeeSelection(cafeSeleccionado, nivelAzucar)
-                MakeCoffee()
-            }
-            is CoffeeMachineState.CoffeeSelection -> { /*el usuario paga en estado de seleccion de cafe*/
-                if (pago()) {
-                    CurrentState = CoffeeMachineState.MakingCoffee
-                    MakeCoffee()
+        while (true) {
+            println("Estado actual: $CurrentState")
+            when (CurrentState) {
+                is CoffeeMachineState.Idle -> {
+                    println("La maquina está en espera, seleccione su café")
+                    selectionCafe()
+                    if (cafeSeleccionado.isNotEmpty()) {
+                        selectionSugar()
+                        CurrentState = CoffeeMachineState.CoffeeSelection(cafeSeleccionado, nivelAzucar)
+                    } else {
+                        continue // Vuelve a pedir selección si no es válida
+                    }
                 }
-            }
-            is CoffeeMachineState.MakingCoffee -> { /*la maquina prepara el cafe en estado de preparando cafe*/
-                println("Preparando su cafe...")
-                Thread.sleep(2000)
-                CurrentState = CoffeeMachineState.ServingCoffee
-                MakeCoffee()
-            }
-            is CoffeeMachineState.ServingCoffee -> { /*la maquina sirve el cafe en estado de sirviendo cafe*/
-                println("Sirviendo su cafe...")
-                Thread.sleep(2000)
-                CurrentState = CoffeeMachineState.CoffeeFinal(cambio)
-                MakeCoffee()
-            }
-            is CoffeeMachineState.CoffeeFinal -> { /*la maquina entrega el cafe y el cambio en estado final*/
-                val estadoFinal = CurrentState as CoffeeMachineState.CoffeeFinal
-                CurrentState = CoffeeMachineState.Idle
-                println("Su cafe esta listo, aqui tiene su cambio: €$cambio")
+                is CoffeeMachineState.CoffeeSelection -> {
+                    if (pago()) {
+                        CurrentState = CoffeeMachineState.MakingCoffee
+                    } else {
+                        continue // Vuelve a pedir pago si es insuficiente
+                    }
+                }
+                is CoffeeMachineState.MakingCoffee -> {
+                    println("Preparando su café...")
+                    Thread.sleep(2000)
+                    CurrentState = CoffeeMachineState.ServingCoffee
+                }
+                is CoffeeMachineState.ServingCoffee -> {
+                    println("Sirviendo su café...")
+                    Thread.sleep(2000)
+                    CurrentState = CoffeeMachineState.CoffeeFinal(cambio)
+                }
+                is CoffeeMachineState.CoffeeFinal -> {
+                    println("Su café está listo, aquí tiene su cambio: €$cambio")
+                    CurrentState = CoffeeMachineState.Idle
+                    break // Termina el ciclo para preguntar si quiere otro café
+                }
             }
         }
     }
+
     fun iniciarMaquina() { /*bucle para reiniciar la maquina si el usuario quiere otro cafe*/
         do {
             MakeCoffee()
@@ -51,6 +55,7 @@ object CoffeeMachine {
             val respuesta = readLine()?.trim()?.lowercase()
         } while (respuesta == "s")
         println("¡Gracias por usar la máquina de café!")
+
     }
     fun selectionCafe() {
         val listaDeCafes = listOf(
