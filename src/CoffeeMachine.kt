@@ -44,7 +44,14 @@ object CoffeeMachine {
             }
         }
     }
-
+    fun iniciarMaquina() { /*bucle para reiniciar la maquina si el usuario quiere otro cafe*/
+        do {
+            MakeCoffee()
+            print("¿Desea comprar otro café? (s/n): ")
+            val respuesta = readLine()?.trim()?.lowercase()
+        } while (respuesta == "s")
+        println("¡Gracias por usar la máquina de café!")
+    }
     fun selectionCafe() {
         val listaDeCafes = listOf(
             "Espresso" to 0.70,
