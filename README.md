@@ -12,5 +12,19 @@ Cada transición de estado depende de la interacción del usuario (selección, p
 
 Asi viendose que se pasa de un estado a otro a dependencia de acciones o tiempo si se quisiera 
 
+```mermaid
+stateDiagram-v2
+
+    Idle --> CoffeeSelection
+    CoffeeSelection --> Idle
+    CoffeeSelection --> MakingCafe
+    MakingCafe --> ServingCoffee
+    ServingCoffee --> Coffeefinal
+    Coffeefinal --> Idle
+
+    Error --> Idle
+    CoffeeSelection --> Error
+    MakingCafe --> Error
+    ServingCoffee --> Error
 
 
