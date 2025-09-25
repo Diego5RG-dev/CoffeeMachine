@@ -48,7 +48,7 @@ object CoffeeMachine {
     fun selectionCafe() {
         val listaDeCafes = listOf(
             "Espresso" to 0.70,
-            "Americano" to 0.80,    /*he creado una lista de pares (nombre, precio) para los cafes*/
+            "Americano" to 0.80,    /*he creado una listad de pares (nombre, precio) para los cafes*/
             "Cappuccino" to 1.20,
             "Latte" to 1.10,
             "Macchiato" to 1.20,
