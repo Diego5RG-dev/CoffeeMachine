@@ -1,3 +1,5 @@
+import CoffeeMachineState.Idle.timestamp
+
 interface ICoffeeMachineState {
     fun onEnter(stateMachine: Estado)
 }
