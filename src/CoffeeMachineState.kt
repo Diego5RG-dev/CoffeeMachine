@@ -1,5 +1,18 @@
+interface ICoffeeMachineState {
+    fun onEnter(stateMachine: Estado)
+}
 sealed class CoffeeMachineState {
-    object Idle : CoffeeMachineState() /* como es de espera le coloco object*/
+    object Idle : CoffeeMachineState(){
+        val timestamp: Long = System.currentTimeMillis()
+        fun onEnter(stateMachine: Estado) {
+            println("[Idle] Entrando en estado Idle a las $timestamp")
+            println("[Idle] La máquina está lista para hacer café.")
+        }
+
+        init{
+            println("[Idle] ejecutando init")
+        }
+    } /* como es de espera le coloco object*/
     data class CoffeeSelection(val coffeeType: String, val sugarLevel: Int) : CoffeeMachineState()
     object MakingCoffee : CoffeeMachineState()
     object ServingCoffee: CoffeeMachineState()
@@ -9,7 +22,4 @@ sealed class CoffeeMachineState {
     van a reciibir parametros, final, el cambio que va a recibir, selection, la seleccion del cafe, y el nivel de azucar
      */
 
-}
-interface ICoffeeMachineState {
-    fun onEnter(stateMachine: Estado)
 }
