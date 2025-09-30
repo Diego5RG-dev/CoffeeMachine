@@ -8,4 +8,8 @@ sealed class CoffeeMachineState {
     /*En este caso he optado por poner "data class a serving coffee, final y seleccion porque dependiendo del caso estos
     van a reciibir parametros, final, el cambio que va a recibir, selection, la seleccion del cafe, y el nivel de azucar
      */
+
+}
+interface ICoffeeMachineState {
+    fun onEnter(stateMachine: Estado)
 }
