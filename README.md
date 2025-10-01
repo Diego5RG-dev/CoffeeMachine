@@ -22,9 +22,6 @@ stateDiagram-v2
     ServingCoffee --> Coffeefinal
     Coffeefinal --> Idle
 
-    Error --> Idle
-    CoffeeSelection --> Error
-    MakingCafe --> Error
-    ServingCoffee --> Error
+  
 
 
