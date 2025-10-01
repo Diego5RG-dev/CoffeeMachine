@@ -71,6 +71,7 @@ object CoffeeMachine {
             println("- $nombre: €$precio")
         }
         print("Introduce el nombre de tu café: ")
+
         val opcion = readLine()?.trim()
         val cafe = listaDeCafes.find { it.first.equals(opcion, ignoreCase = true) }
         if (cafe != null) {

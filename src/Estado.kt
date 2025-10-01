@@ -11,10 +11,10 @@ object Estado {
 
     private fun isValidTransition(from: CoffeeMachineState, to: CoffeeMachineState): Boolean {
         return when (from) {
-            CoffeeMachineState.Idle -> to == CoffeeMachineState.CoffeeSelection("", 0)
+            is CoffeeMachineState.Idle -> to == CoffeeMachineState.CoffeeSelection("", 0)
             is CoffeeMachineState.CoffeeSelection -> to == CoffeeMachineState.MakingCoffee
-            CoffeeMachineState.MakingCoffee -> to == CoffeeMachineState.ServingCoffee
-            CoffeeMachineState.ServingCoffee -> to == CoffeeMachineState.CoffeeFinal(0.0)
+            is CoffeeMachineState.MakingCoffee -> to == CoffeeMachineState.ServingCoffee
+            is CoffeeMachineState.ServingCoffee -> to == CoffeeMachineState.CoffeeFinal(0.0)
             is CoffeeMachineState.CoffeeFinal -> to == CoffeeMachineState.Idle
         }
     }
